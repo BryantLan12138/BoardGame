@@ -95,13 +95,40 @@ void CenterOfTable::deleteTile(int index)
 	}
 }
 
+bool CenterOfTable::checkCenter(char colour){
+	for (int i = 0; i < size(); i++){
+		if (centerOfTable[i]->getColourAsChar() == colour){
+			return true;
+		}
+	}
+	return false;
+}
+
 //Print center tiles
 void CenterOfTable::printCenter()
 {
 	std::cout << "0: ";
 	for (int i = 0; i < size(); ++i)
 	{
-		std::cout << centerOfTable[i]->getColourAsChar() << " ";
+		char colour = centerOfTable[i]->getColourAsChar();
+		if (colour == 'R'){
+			std::cout << "\033[1;31m" << colour << "\033[0m" <<' ';
+		}
+		if (colour == 'Y'){
+			std::cout << "\033[1;33m" << colour << "\033[0m" <<' ';
+		}
+		if (colour == 'U'){
+			std::cout << "\033[1;30m" << colour << "\033[0m" <<' ';
+		}
+		if (colour == 'B'){
+			std::cout << "\033[1;34m" << colour << "\033[0m" <<' ';
+		}
+		if (colour == 'L'){
+			std::cout << "\033[1;96m" << colour << "\033[0m" <<' ';
+		}
+		if (colour == 'F'){
+			std::cout << "\033[1;95m" << colour << "\033[0m" <<' ';
+		}
 	}
 }
 

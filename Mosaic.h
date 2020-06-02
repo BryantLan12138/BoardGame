@@ -51,13 +51,16 @@ public:
 	//get boxLid
 	BoxLid *getBoxLid();
 
+	void printColour(char colour);
+
+	int getTotalScore(int playerTurn);
+
 private:
+	struct Node *head;
 	char **leftPart = nullptr;
 	char **rightPart = nullptr;
 	char *brokenTiles = nullptr;
 	char final_tiles[MOSAIC_LENGTH][MOSAIC_LENGTH + 1] = {"BYRUL", "LBYRU", "ULBYR", "RULBY", "YRULB"};
-
-	// char broken_tiles[BROKEN_LENGTH + 1] = {"0000000"};
 	Score *score[2];
 	BoxLid *boxlid;
 };

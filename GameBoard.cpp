@@ -193,21 +193,35 @@ Factory *GameBoard::getFactory(int row)
 }
 
 //Pick a tile from factory to move to the speicified row of player's mosaic, remaining tiles moved to center of table
-void GameBoard::pickTileFromFactory(int factory, char colour, int row, int playerTurn)
+bool GameBoard::pickTileFromFactory(int factory, char colour, int row, int playerTurn)
 {
 	if (factory >= 0 && factory <= TOTAL_FACTORY_NUM)
 	{
 		if (factory == 0)
 		{
-			//Pick tiles from center of table
-			centerOfTable->pickTiles(colour, row, mosaic[playerTurn]);
+			if (centerOfTable->checkCenter(colour)){
+				//Pick tiles from center of table
+				centerOfTable->pickTiles(colour, row, mosaic[playerTurn]);
+			}else{
+				std::cout << "Center of table doesn't have the colour tile you pick." << std::endl;
+				return false;
+			}
 		}
 		else
 		{
-			// to minus one because of index starting at 0
-			factories[factory - 1]->pickTiles(colour, centerOfTable, row, mosaic[playerTurn]);
+			if (factories[factory - 1]->checkFactory(colour)){
+				// to minus one because of index starting at 0
+				factories[factory - 1]->pickTiles(colour, centerOfTable, row, mosaic[playerTurn]);
+			}else{
+				std::cout << "The factory doesn't have the colour tile you pick." << std::endl;
+				return false;
+			}
 		}
 		players[playerTurn]->setMosaic(mosaic[playerTurn]);
+		return true;
+	}
+	else{
+		return false;
 	}
 }
 

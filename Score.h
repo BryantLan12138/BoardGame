@@ -8,8 +8,11 @@ public:
    // Constructor/Desctructor
    Score();
 
-   // get current score
-   int getScore();
+   // get round score
+   int getRoundScore();
+
+   // get the final total score
+   int getFinalScore();
 
    // Calculates the score for a single tile, by counting the contiguous row and/or column of it
    void scoreTile(char** wall);
@@ -27,5 +30,5 @@ public:
    void brokenScore(char* tiles);
 
 private:
-   int score;
+   int roundScore, totalScore;
 };

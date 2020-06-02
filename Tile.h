@@ -18,6 +18,7 @@ enum Colour
 class Tile
 {
 public:
+    bool operator<(Tile &tile);
     Tile(Colour colour);
     Tile(Tile &other);
     ~Tile();

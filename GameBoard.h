@@ -38,7 +38,7 @@ public:
 	Factory *getFactory(int row);
 
 	//Pick a tile from factory
-	void pickTileFromFactory(int factory, char colour, int row, int player);
+	bool pickTileFromFactory(int factory, char colour, int row, int player);
 
 	//Declares the end of the round
 	bool endRound();

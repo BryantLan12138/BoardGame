@@ -34,6 +34,7 @@ public:
 	void printCenter();
 	//Sort tiles in order of colour
 	void sortTiles();
+	bool checkCenter(char colour);
 
 private:
 	std::vector<Tile *> centerOfTable;

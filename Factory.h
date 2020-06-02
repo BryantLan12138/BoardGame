@@ -3,14 +3,13 @@
 
 #include <iostream>
 #include <fstream>
-// #include <vector>
-// #include <algorithm>
 
 #include <string>
 #include "TileBag.h"
 #include "CenterOfTable.h"
 #include "Mosaic.h"
 #include "Player.h"
+#include "BinaryTree.h"
 
 #define MAX_LENGTH 4
 
@@ -49,10 +48,13 @@ public:
 	//Clear the factory
 	void clear();
 
+	bool checkFactory(char colour);
+
 private:
 	// TileBag *tileBag;
 	int length;
 	Tile *tiles[MAX_LENGTH];
+	BSTree<Tile> *newTree;
 };
 
 #endif // !FACTORY_H

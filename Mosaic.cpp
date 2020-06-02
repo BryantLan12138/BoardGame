@@ -39,6 +39,7 @@ Mosaic::Mosaic()
     }
 
     boxlid = new BoxLid();
+    head = NULL;
 }
 Mosaic::Mosaic(std::string dataOfBrokenTilesToLoad, std::string dataOfWallToLoad, std::string dataOfLinesToLoad[5])
 {
@@ -134,14 +135,37 @@ void Mosaic::printMosaic()
         }
         for (int k = 0; k < i; k++)
         {
-            std::cout << leftPart[i - 1][k] << " ";
+            printColour(leftPart[i - 1][k]);
         }
         std::cout << " ||";
         for (int l = 0; l < MOSAIC_LENGTH; l++)
         {
-            std::cout << " " << rightPart[i - 1][l];
+            printColour(rightPart[i - 1][l]);
         }
         std::cout << std::endl;
+    }
+}
+
+void Mosaic::printColour(char colour){
+    if (colour == 'R'){
+		std::cout << "\033[1;31m" << colour << "\033[0m" <<' ';
+    }
+    if (colour == 'Y'){
+        std::cout << "\033[1;33m" << colour << "\033[0m" <<' ';
+    }
+    if (colour == 'U'){
+        std::cout << "\033[1;30m" << colour << "\033[0m" <<' ';
+    }
+    if (colour == 'B'){
+        std::cout << "\033[1;34m" << colour << "\033[0m" <<' ';
+    }
+    if (colour == 'L'){
+        std::cout << "\033[1;96m" << colour << "\033[0m" <<' ';
+    }
+    if (colour == 'F'){
+        std::cout << "\033[1;95m" << colour << "\033[0m" <<' ';
+    } if (colour == '.'){
+        std::cout << '.' << ' ';
     }
 }
 void Mosaic::addBroken(Colour colour)
@@ -152,7 +176,7 @@ void Mosaic::addBroken(Colour colour)
         if (i > 7)
         {
             // put access broken tiles to boxlid
-            boxlid->addFront(newTile);
+            boxlid->addFront(&head, newTile);
         }
         if (brokenTiles[i] == '0')
         {
@@ -172,7 +196,7 @@ void Mosaic::checkBroken()
     {
         if (brokenTiles[i] != '0')
         {
-            std::cout << brokenTiles[i] << ' ';
+            printColour(brokenTiles[i]);
         }
     }
     std::cout << std::endl;
@@ -186,6 +210,13 @@ void Mosaic::addTiles(Tile *tile, int row, bool firstPlayer)
     char colour = newTile->getColourAsChar();
     for (int i = row; i >= 0; i--)
     {
+        for (int j = 0; j < MOSAIC_LENGTH; j++)
+        {
+            if (colour == rightPart[row - 1][j]){
+                std::cout << "You put the tiles existing in right part of mosaic, incorrect action." << std::endl;
+                return;
+            }
+        }
         if (firstPlayer)
         {
             addBroken(FIRST_MARKER);
@@ -252,7 +283,7 @@ void Mosaic::wallTiling()
             // others go to boxlid
             for (int i = 0; i < row; i++)
             {
-                boxlid->addFront(newTile);
+                boxlid->addFront(&head, newTile);
             }
         }
     }
@@ -297,7 +328,11 @@ int Mosaic::getRoundScore(int playerTurn)
     {
         brokenTiles[i] = '0';
     }
-    return score[playerTurn]->getScore();
+    return score[playerTurn]->getRoundScore();
+}
+
+int Mosaic::getTotalScore(int playerTurn){
+    return score[playerTurn]->getFinalScore();
 }
 
 int Mosaic::getFinalScore(int playerTurn)
@@ -305,7 +340,7 @@ int Mosaic::getFinalScore(int playerTurn)
     score[playerTurn]->rowBonus(rightPart);
     score[playerTurn]->colBonus(rightPart);
     score[playerTurn]->colorBonus(rightPart);
-    return score[playerTurn]->getScore();
+    return score[playerTurn]->getFinalScore();
 }
 
 char **Mosaic::getLeftPart()

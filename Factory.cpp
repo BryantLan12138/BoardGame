@@ -1,15 +1,16 @@
 #include "Factory.h"
 
+
 Factory::Factory()
 {
 	//Initialising length to zero, since the factory is empty at first
 	length = 0;
-
+	newTree = new BSTree<Tile>();
 	//Initialsing the whole array of Factory to nullptr
-	for (int i = 0; i < MAX_LENGTH; ++i)
-	{
-		tiles[i] = nullptr;
-	}
+	// for (int i = 0; i < MAX_LENGTH; ++i)
+	// {
+	// 	tiles[i] = nullptr;
+	// }
 }
 //Clear memory
 Factory::~Factory()
@@ -70,6 +71,7 @@ int Factory::getSize()
 //Get a pointer to a tile at index
 Tile *Factory::getTile(int index)
 {
+	
 	Tile *tile = nullptr;
 	if (index >= 0 && index < length)
 	{
@@ -78,18 +80,62 @@ Tile *Factory::getTile(int index)
 	return tile;
 }
 
-//Fill factory with tiles taken from TileBag
+// Tile *Factory::getTile()
+
+// Fill factory with tiles taken from TileBag
 void Factory::fillFactory(TileBag *tileBag)
 {
+	
 
 	for (int i = 0; i < MAX_LENGTH; ++i)
 	{
-		tiles[i] = new Tile(tileBag->get(i)->getColour());
-		tileBag->deleteTile(i);
+		newTree->Insert(*tileBag->get(i));
+		// tiles[i] = new Tile(tileBag->get(i)->getColour());
+		// tileBag->deleteTile(i);
 	}
 
 	length = MAX_LENGTH;
 }
+
+// new one with binary tree
+// void Factory::fillFactory(TileBag *tileBag){
+// 	for (int i = 0; i < MAX_LENGTH; ++i)
+// 	{
+// 		newTree->Insert(tileBag->get(i));
+// 		tileBag->deleteTile(i);
+// 	}
+// 	length = MAX_LENGTH;
+// }
+
+bool Factory::checkFactory(char colour)
+{
+	if (length != 0){
+		for (int i = 0; i < MAX_LENGTH; i++)
+		{
+			if (tiles[i]->getColourAsChar() == colour)
+			{
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+// // new checkFactory with binary tree
+// bool Factory::checkFactory(Colour colour)
+// {
+// 	if (newTree != nullptr)
+// 	{
+// 		for (int i = 0; i < MAX_LENGTH; i++)
+// 		{
+// 			if (newTree->get(colour, )->getColourAsChar() == colour)
+// 			{
+// 				return true;
+// 			}
+// 		}
+// 	}
+// 	return false;
+// }
 
 //Pick a tile and move it to the mosaic, while the rest gets moved to the center
 void Factory::pickTiles(char colour, CenterOfTable *centerOfTable, int row, Mosaic *mosaic)
@@ -127,9 +173,25 @@ void Factory::pickTiles(char colour, CenterOfTable *centerOfTable, int row, Mosa
 //Print factory info
 void Factory::printFactoryInfo()
 {
+	 
 	for (int i = 0; i < MAX_LENGTH; ++i)
 	{
-		std::cout << tiles[i]->getColourAsChar() << " ";
+		char colour = tiles[i]->getColourAsChar();
+		if (colour == 'R'){
+			std::cout << "\033[1;31m" << colour << "\033[0m" <<' ';
+		}
+		if (colour == 'Y'){
+			std::cout << "\033[1;33m" << colour << "\033[0m" <<' ';
+		}
+		if (colour == 'U'){
+			std::cout << "\033[1;30m" << colour << "\033[0m" <<' ';
+		}
+		if (colour == 'B'){
+			std::cout << "\033[1;34m" << colour << "\033[0m" <<' ';
+		}
+		if (colour == 'L'){
+			std::cout << "\033[1;96m" << colour << "\033[0m" <<' ';
+		}
 	}
 }
 

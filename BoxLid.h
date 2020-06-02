@@ -1,14 +1,14 @@
 #ifndef BOXLID_H
 #define BOXLID_H
 
-#include "Node.h"
 #include "Tile.h"
 
-class LinkedList
+// A doubly linked list node
+struct Node
 {
-public:
-    Node *head;
-    Node *tail;
+    Tile *tile;
+    struct Node *next;
+    struct Node *prev;
 };
 
 class BoxLid
@@ -27,10 +27,13 @@ public:
     Tile *getTile(int i);
 
     //Add tiles to the front
-    void addFront(Tile *tile);
+    void addFront(struct Node **head, Tile *newTile);
 
-    //Add tiles to the bakck
-    void addBack(Tile *tile);
+    //Add tiles after the specific node
+    void addAfter(struct Node *prev_node, Tile *newTile);
+
+    //Add tiles to the back
+    void addBack(struct Node **head, Tile *newTile);
 
     //Delete tiles from front
     void deleteFront();
@@ -39,7 +42,7 @@ public:
     void deleteBack();
 
 private:
-    LinkedList *boxLid;
+    struct Node *boxLidHead;
     int length;
 };
 

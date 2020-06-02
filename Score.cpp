@@ -1,62 +1,36 @@
 #include "Score.h"
 Score::Score(){
-    score = 0;
+    roundScore = 0;
+    totalScore = 0;
 }
 
 void Score::scoreTile(char** wall)
 {
+    roundScore = 0;
     for (int row = 0; row < MOSAIC_LENGTH; row++)
     {
         for (int col = 0; col < MOSAIC_LENGTH; col++)
         {
-            if (row + 1 < MOSAIC_LENGTH && col + 1 < MOSAIC_LENGTH && row - 1 >= 0 && col - 1 >= 0)
+            if (row > 0 && col > 0)
             {
                 if (wall[row][col] != '.'){
-                    score++;
-                    if (wall[row + 1][col] != '.' || wall[row][col + 1] != '.' ||
-                        wall[row - 1][col] != '.' || wall[row][col - 1] != '.')
-                    {
-                        score += 2;
+                    roundScore++;
+                    if (wall[row - 1][col] != '.' || wall[row][col - 1] != '.'){
+                        roundScore++;
                     }
                 }
             }
-            if ((row == 0 && col < 4) || (row < 4 && col == 0) || (row == 0 && col == 0))
-            {
+            if (row == 0 && col > 0){
                 if (wall[row][col] != '.'){
-                    score++;
-                    if (wall[row + 1][col] != '.' || wall[row][col + 1] != '.'){
-                            score += 2;
+                    roundScore++;
+                    if (wall[row][col - 1] != '.'){
+                        roundScore++;
                     }
                 }
             }
-            if ((row == 4 && col > 0) || (row > 0 && col == 4) || (row == 4 && col == 4)){
+            if (row == 0 && col == 0){
                 if (wall[row][col] != '.'){
-                    score++;
-                    if (wall[row - 1][col] != '.' || wall[row][col - 1] != '.')
-                    {
-                        score += 2;
-                    }
-                }
-            }
-            if (row == 0 && col == 4){
-                if (wall[row][col] != '.')
-                {
-                    score++;
-                    if (wall[row][col + 1] != '.' || wall[row][col - 1] != '.')
-                    {
-                        score += 2;
-                    }
-                }    
-            }
-            if (row == 4 && col == 0)
-            {
-                if (wall[row][col] != '.')
-                {
-                    score++;
-                    if (wall[row - 1][col] != '.' || wall[row][col + 1] != '.')
-                    {
-                        score += 2;
-                    }
+                    roundScore++;
                 }
             }
         }
@@ -64,29 +38,33 @@ void Score::scoreTile(char** wall)
 }
 
 void Score::brokenScore(char* tiles){
+    int deduct = 0;
     for (int i = 0; i < BROKEN_LENGTH; i++){
-        if (score < 0){
-            score = 0;
-            break;
+        if (roundScore < 0){
+            roundScore = 0;
+            return;
         }
         if (i < 2){
             if (tiles[i] != '0'){
-                score -= 1;
+                deduct++;
             }
         }
         else if (i >= 2 && i <= 4){
             if (tiles[i] != '0')
             {
-                score -= 2;
+                deduct += 2;
             }
         }
         else{
             if (tiles[i] != '0')
             {
-                score -= 3;
+                deduct += 3;
             }
         }
     }
+    roundScore -= deduct;
+    totalScore += roundScore;
+    
 }
 
 // Adds 2 to this player's score for every complete row
@@ -105,7 +83,7 @@ void Score::rowBonus(char** wall)
             }
         }
         if (complete)
-            score += 2;
+            totalScore += 2;
     }
 }
 
@@ -125,7 +103,7 @@ void Score::colBonus(char** wall)
             }
         }
         if (complete)
-            score += 7;
+            totalScore += 7;
     }
 }
 
@@ -145,10 +123,14 @@ void Score::colorBonus(char** wall)
             }
         }
         if (complete)
-            score += 10;
+            totalScore += 10;
     }
 }
 
-int Score::getScore(){
-    return score;
+int Score::getRoundScore(){
+    return roundScore;
+}
+
+int Score::getFinalScore(){
+    return totalScore;
 }

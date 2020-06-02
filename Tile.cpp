@@ -19,6 +19,15 @@ Colour Tile::getColour()
     return colour;
 }
 
+bool Tile::operator<(Tile &tile)
+{
+    if (tile.getColour() <= colour){
+        return true;
+    }else{
+        return false;
+    }
+}
+
 char Tile::getColourAsChar()
 {
     char returnVal = {};
