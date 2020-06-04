@@ -5,12 +5,12 @@ Factory::Factory()
 {
 	//Initialising length to zero, since the factory is empty at first
 	length = 0;
-	newTree = new BSTree<Tile>();
-	//Initialsing the whole array of Factory to nullptr
-	// for (int i = 0; i < MAX_LENGTH; ++i)
-	// {
-	// 	tiles[i] = nullptr;
-	// }
+	// newTree = new BSTree<Tile>();
+	// Initialsing the whole array of Factory to nullptr
+	for (int i = 0; i < MAX_LENGTH; ++i)
+	{
+		tiles[i] = nullptr;
+	}
 }
 //Clear memory
 Factory::~Factory()
@@ -89,9 +89,9 @@ void Factory::fillFactory(TileBag *tileBag)
 
 	for (int i = 0; i < MAX_LENGTH; ++i)
 	{
-		newTree->Insert(*tileBag->get(i));
-		// tiles[i] = new Tile(tileBag->get(i)->getColour());
-		// tileBag->deleteTile(i);
+		// newTree->Insert(*tileBag->get(i));
+		tiles[i] = new Tile(tileBag->get(i)->getColour());
+		tileBag->deleteTile(i);
 	}
 
 	length = MAX_LENGTH;
@@ -191,6 +191,9 @@ void Factory::printFactoryInfo()
 		}
 		if (colour == 'L'){
 			std::cout << "\033[1;96m" << colour << "\033[0m" <<' ';
+		}
+		if (colour == 'O'){
+			std::cout << "\033[1;39m" << colour << "\033[0m" << ' ' ;
 		}
 	}
 }

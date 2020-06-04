@@ -54,7 +54,7 @@ private:
 	// TileBag *tileBag;
 	int length;
 	Tile *tiles[MAX_LENGTH];
-	BSTree<Tile> *newTree;
+	// BSTree<Tile> *newTree;
 };
 
 #endif // !FACTORY_H

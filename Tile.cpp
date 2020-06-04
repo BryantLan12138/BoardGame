@@ -55,6 +55,10 @@ char Tile::getColourAsChar()
     {
         returnVal = 'U';
     }
+    else if (colour == 6)
+    {
+        returnVal = 'O';
+    }
     return returnVal;
 }
 

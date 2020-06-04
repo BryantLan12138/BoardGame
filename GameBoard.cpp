@@ -1,9 +1,9 @@
 #include "GameBoard.h"
 
-GameBoard::GameBoard(int seed)
+GameBoard::GameBoard(int seed, bool extension)
 {
 	centerOfTable = new CenterOfTable();
-	tileBag = new TileBag(seed);
+	tileBag = new TileBag(seed, extension);
 	boxLid = new BoxLid();
 
 	//Initialise mosaic for each player

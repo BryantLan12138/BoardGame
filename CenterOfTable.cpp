@@ -129,6 +129,10 @@ void CenterOfTable::printCenter()
 		if (colour == 'F'){
 			std::cout << "\033[1;95m" << colour << "\033[0m" <<' ';
 		}
+		if (colour == 'O')
+		{
+			std::cout << "\033[1;39m" << colour << "\033[0m" << ' ';
+		}
 	}
 }
 
@@ -175,7 +179,7 @@ void CenterOfTable::pickTiles(char colour, int row, Mosaic *mosaic)
 				mosaic->addTiles(newTile, row, firstPlayer);
 
 				//Print out statement for testing
-				std::cout << centerOfTable[i]->getColourAsChar() << " Picked" << std::endl;
+				// std::cout << centerOfTable[i]->getColourAsChar() << " Picked" << std::endl;
 
 				//Delete the tile that has been picked up from center
 				deleteTile(i);

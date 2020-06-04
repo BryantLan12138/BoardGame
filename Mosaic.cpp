@@ -124,12 +124,18 @@ Mosaic::~Mosaic()
     delete brokenTiles;
 }
 
-void Mosaic::printMosaic()
+void Mosaic::printMosaic(bool extension)
 {
-    for (int i = FIRST; i < MOSAIC_LENGTH + 1; i++)
+    this->extension = extension;
+    if (extension){
+        mosaic_length = 6;
+    }else{
+        mosaic_length = 5;
+    }
+    for (int i = FIRST; i < mosaic_length + 1; i++)
     {
         std::cout << i << ": ";
-        for (int j = MOSAIC_LENGTH; j > i; j--)
+        for (int j = mosaic_length; j > i; j--)
         {
             std::cout << "  ";
         }
@@ -138,7 +144,7 @@ void Mosaic::printMosaic()
             printColour(leftPart[i - 1][k]);
         }
         std::cout << " ||";
-        for (int l = 0; l < MOSAIC_LENGTH; l++)
+        for (int l = 0; l < mosaic_length; l++)
         {
             printColour(rightPart[i - 1][l]);
         }
@@ -164,7 +170,11 @@ void Mosaic::printColour(char colour){
     }
     if (colour == 'F'){
         std::cout << "\033[1;95m" << colour << "\033[0m" <<' ';
-    } if (colour == '.'){
+    } 
+    if (colour == 'O'){
+        std::cout << "\033[1;39m" << colour << "\033[0m" << ' ';
+    }
+    if (colour == '.'){
         std::cout << '.' << ' ';
     }
 }
@@ -210,7 +220,7 @@ void Mosaic::addTiles(Tile *tile, int row, bool firstPlayer)
     char colour = newTile->getColourAsChar();
     for (int i = row; i >= 0; i--)
     {
-        for (int j = 0; j < MOSAIC_LENGTH; j++)
+        for (int j = 0; j < mosaic_length; j++)
         {
             if (colour == rightPart[row - 1][j]){
                 std::cout << "You put the tiles existing in right part of mosaic, incorrect action." << std::endl;
@@ -246,8 +256,11 @@ void Mosaic::wallTiling()
 {
     Tile *newTile;
     // each row will be checked see if it is filled
-    bool complete[MOSAIC_LENGTH] = {true, true, true, true, true};
-    for (int row = 1; row < MOSAIC_LENGTH + 1; row++)
+    bool complete[mosaic_length];
+    for (int i = 0; i < mosaic_length; i++){
+        complete[i] = true;
+    }
+    for (int row = 1; row < mosaic_length + 1; row++)
     {
         for (int i = 0; i < row; i++)
         {
@@ -258,32 +271,67 @@ void Mosaic::wallTiling()
             }
         }
     }
-    for (int row = 0; row < MOSAIC_LENGTH; row++)
-    {
-        if (complete[row])
+    if (!extension){
+        for (int row = 0; row < mosaic_length; row++)
         {
-            char tmp = leftPart[row][0];
-            // char tmp = left_part[row][0];
-            newTile = new Tile(getColour(tmp));
-            for (int i = 0; i < MOSAIC_LENGTH; i++)
+            if (complete[row])
             {
-                if (final_tiles[row][i] == tmp)
+                char tmp = leftPart[row][0];
+                // char tmp = left_part[row][0];
+                newTile = new Tile(getColour(tmp));
+                for (int i = 0; i < mosaic_length; i++)
                 {
-                    rightPart[row][i] = tmp;
-                    // right_part[row][i] = tmp;
+                    if (final_tiles[row][i] == tmp)
+                    {
+                        rightPart[row][i] = tmp;
+                        // right_part[row][i] = tmp;
+                    }
+                }
+                // to remove the tiles on left part of mosaic
+                for (int i = 0; i < row + 1; i++)
+                {
+                    leftPart[row][i] = '.';
+                    // left_part[row][i] = '.';
+                }
+
+                // others go to boxlid
+                for (int i = 0; i < row; i++)
+                {
+                    boxlid->addFront(&head, newTile);
                 }
             }
-            // to remove the tiles on left part of mosaic
-            for (int i = 0; i < row + 1; i++)
+        }
+    }else{
+        for (int row = 0; row < mosaic_length; row++)
+        {
+            int newCol=0;
+            if (complete[row])
             {
-                leftPart[row][i] = '.';
-                // left_part[row][i] = '.';
-            }
-
-            // others go to boxlid
-            for (int i = 0; i < row; i++)
-            {
-                boxlid->addFront(&head, newTile);
+                printMosaic(extension);
+                std::cout << "Row " << row+1 << " is completed." << std::endl;
+                std::cout << "Which mosaic row you want to put? Input two integer indicating col, e.g.: > 2 " << std::endl << "> ";
+                if (std::cin.good()){
+                    std::cin >> newCol;
+                    char tmp = leftPart[row][0];
+                    newTile = new Tile(getColour(tmp));
+                    rightPart[row][newCol - 1] = tmp;
+                }
+                else{
+                    std::cout << "Invalid input, please enter again." << std::endl;
+                    std::cin.clear();
+                    std::cin.ignore(1000, '\n');
+                }
+                
+                // wall tiling let them become empty
+                for (int i = 0; i < row + 1; i++)
+                {
+                    leftPart[row][i] = '.';
+                }
+                // others go to boxlid
+                for (int i = 0; i < row; i++)
+                {
+                    boxlid->addFront(&head, newTile);
+                }
             }
         }
     }
@@ -321,7 +369,7 @@ Colour Mosaic::getColour(char colour)
 
 int Mosaic::getRoundScore(int playerTurn)
 {
-    score[playerTurn]->scoreTile(rightPart);
+    score[playerTurn]->scoreTile(rightPart, extension);
     score[playerTurn]->brokenScore(brokenTiles);
     // restart
     for (int i = 0; i < BROKEN_LENGTH; i++)
@@ -360,10 +408,14 @@ char *Mosaic::getBroken()
 
 bool Mosaic::checkEndGame()
 {
-    bool complete[MOSAIC_LENGTH] = {true, true, true, true, true};
-    for (int i = 0; i < MOSAIC_LENGTH; i++)
+    bool complete[mosaic_length];
+    for (int i = 0; i < mosaic_length; i++)
     {
-        for (int j = 0; j < MOSAIC_LENGTH; j++)
+        complete[i] = true;
+    }
+    for (int i = 0; i < mosaic_length; i++)
+    {
+        for (int j = 0; j < mosaic_length; j++)
         {
             if (rightPart[i][j] == '.')
             {
@@ -373,7 +425,7 @@ bool Mosaic::checkEndGame()
         }
     }
 
-    for (int i = 0; i < MOSAIC_LENGTH; i++)
+    for (int i = 0; i < mosaic_length; i++)
     {
         if (complete[i])
         {

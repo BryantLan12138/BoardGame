@@ -1,9 +1,11 @@
 #include "TileBag.h"
 #include <algorithm>
 #include <random>
+#include <iostream>
 
-TileBag::TileBag(int seed) : tileBag()
+TileBag::TileBag(int seed, bool extension) : tileBag()
 {
+    this->extension = extension;
     this->addTiles(seed);
 }
 
@@ -39,6 +41,11 @@ TileBag::TileBag(std::string loadData)
         {
             Tile *black = new Tile(BLACK);
             tileBag.push_back(black);
+        }
+        else if (c == 'O')
+        {
+            Tile *orange = new Tile(ORANGE);
+            tileBag.push_back(orange);
         }
     }
 }
@@ -79,12 +86,17 @@ void TileBag::addTiles(int seed)
         Tile *darkBlue = new Tile(DARK_BLUE);
         Tile *lightBlue = new Tile(LIGHT_BLUE);
         Tile *black = new Tile(BLACK);
+        
         tileBag.push_back(red);
         tileBag.push_back(yellow);
         tileBag.push_back(darkBlue);
         tileBag.push_back(lightBlue);
         tileBag.push_back(black);
-        
+
+        if (extension){
+            Tile *orange = new Tile(ORANGE);
+            tileBag.push_back(orange);
+        }
     }
     //random version
     std::shuffle(tileBag.begin(), tileBag.end(), std::default_random_engine(seed));

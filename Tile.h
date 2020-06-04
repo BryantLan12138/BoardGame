@@ -9,7 +9,8 @@ enum Colour
     YELLOW,
     DARK_BLUE,
     LIGHT_BLUE,
-    BLACK
+    BLACK,
+    ORANGE
 };
 
 /**

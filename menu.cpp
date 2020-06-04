@@ -8,12 +8,12 @@
 #include "LoadGame.h"
 
 void printMenu();
-void gameLoop(GameBoard *gameBoard, bool playerTurn, bool greyBoardMode, bool extension);
+void gameLoop(GameBoard *gameBoard, bool playerTurn, bool extension);
 void printCredits();
-void printMosaic(GameBoard *gameBoard, int playerTurn);
+void printMosaic(GameBoard *gameBoard, int playerTurn, bool extension);
 bool endGame(GameBoard *gameBoard, int playerTurn);
-void endRound(GameBoard *gameBoard, int playerTurn);
-void menuSelection(int userInput, int seed);
+void endRound(GameBoard *gameBoard, int playerTurn, bool extension);
+void menuSelection(int userInput, int seed, bool extension);
 void playNewGame(int seed);
 void helpCenter();
 void loadGame();
@@ -22,9 +22,16 @@ void LoadNewGame();
 int main(int argc, char **argv)
 {
     std::string userInput;
-    if (argc == 3)
+    if (argc == 4)
     {
         int seed = atoi(argv[2]);
+        std::string mode = argv[3];
+        bool extension = false;
+        if (mode == "-x"){
+            extension = true;
+        }else{
+            extension = false;
+        }
         //Menu will display until the user chooser to Quit or hit EOF
         while (userInput != "4" && !std::cin.eof())
         {
@@ -35,7 +42,7 @@ int main(int argc, char **argv)
             //Check if input is valid and within range
             if (std::cin.good() && (userInput == "1" || userInput == "2" || userInput == "3"))
             {
-                menuSelection(std::stoi(userInput), seed);
+                menuSelection(std::stoi(userInput), seed, extension);
             }
             else if (std::cin.good() && (userInput == "help")){
                 helpCenter();
@@ -139,9 +146,9 @@ void printCredits()
     }
     std::cout << "--------------------------------" << std::endl;
 }
-void printMosaic(GameBoard *gameBoard, int playerTurn){
+void printMosaic(GameBoard *gameBoard, int playerTurn, bool extension){
     //Print the mosaic for player
-    gameBoard->getPlayer(playerTurn)->getMosaic()->printMosaic();
+    gameBoard->getPlayer(playerTurn)->getMosaic()->printMosaic(extension);
     gameBoard->getPlayer(playerTurn)->getMosaic()->checkBroken();
 }
 
@@ -172,7 +179,7 @@ bool endGame(GameBoard *gameBoard, int playerTurn){
     }
     return false;
 }
-void endRound(GameBoard *gameBoard, int playerTurn){
+void endRound(GameBoard *gameBoard, int playerTurn, bool extension){
     if (gameBoard->endRound())
     {
         std::cout << std::endl
@@ -180,7 +187,7 @@ void endRound(GameBoard *gameBoard, int playerTurn){
         std::cout << "FOR PLAYER: " << gameBoard->getPlayer(playerTurn)->getPlayerName() << std::endl
                   << std::endl;
         gameBoard->getPlayer(playerTurn)->getMosaic()->wallTiling();
-        gameBoard->getPlayer(playerTurn)->getMosaic()->printMosaic();
+        gameBoard->getPlayer(playerTurn)->getMosaic()->printMosaic(extension);
         std::cout << "The round score: " << gameBoard->getPlayer(playerTurn)->getMosaic()->getRoundScore(playerTurn) << std::endl;
         std::cout << "The total score: " << gameBoard->getPlayer(playerTurn)->getMosaic()->getTotalScore(playerTurn) << std::endl;
         std::cout << std::endl;
@@ -188,7 +195,7 @@ void endRound(GameBoard *gameBoard, int playerTurn){
         std::cout << "FOR PLAYER: " << gameBoard->getPlayer(!playerTurn)->getPlayerName() << std::endl
                   << std::endl;
         gameBoard->getPlayer(!playerTurn)->getMosaic()->wallTiling();
-        gameBoard->getPlayer(!playerTurn)->getMosaic()->printMosaic();
+        gameBoard->getPlayer(!playerTurn)->getMosaic()->printMosaic(extension);
         std::cout << "The round score: " << gameBoard->getPlayer(!playerTurn)->getMosaic()->getRoundScore(!playerTurn) << std::endl;
         std::cout << "The total score: " << gameBoard->getPlayer(!playerTurn)->getMosaic()->getTotalScore(!playerTurn) << std::endl;
         std::cout << std::endl;
@@ -203,7 +210,7 @@ void endRound(GameBoard *gameBoard, int playerTurn){
     }
 }
 
-void playNewGame(int seed)
+void playNewGame(int seed, bool extension)
 {
     SaveGame *saveGame = new SaveGame();
 
@@ -211,55 +218,39 @@ void playNewGame(int seed)
     std::cout << std::endl;
 
     //Create a new game board
-    GameBoard *gameBoard = new GameBoard(seed);
+    GameBoard *gameBoard = new GameBoard(seed, extension);
     gameBoard->getCenter()->addFMarker();
 
     std::string playerName1 = "";
     std::string playerName2 = "";
-    char greyBoardMode;
-    char extension;
-    bool gMode, eMode, successA=false,successB=false;
+    // bool eMode=false, success=false;
     std::cout << "Enter a name for player 1" << std::endl << "> ";
     std::cin >> playerName1;
     std::cout << std::endl << "Enter a name for player 2" << std::endl << "> ";
     std::cin >> playerName2;
-    while (!std::cin.eof() && !(successA && successB)){
-        std::cout << std::endl
-                  << "Do you want to enable GreyBoard mode? (y/n)" << std::endl
-                  << "> ";
-        std::cin >> greyBoardMode;
-        std::cout << std::endl
-                  << "Do you want to enable 6x6 mode? (y/n)" << std::endl
-                  << "> ";
-        std::cin >> extension;
-        if (std::cin.good()){
-            if (tolower(greyBoardMode) == 'y')
-            {
-                gMode = true;
-                successA = true;
-            }
-            if (tolower(greyBoardMode) == 'n')
-            {
-                gMode = false;
-                successA = true;
-            }
-            if (tolower(extension) == 'y')
-            {
-                eMode = true;
-                successB = true;
-            }
-            if (tolower(extension) == 'n')
-            {
-                eMode = false;
-                successB = true;
-            }
-            else
-            {
-                std::cout << std::endl
-                          << "INVALID INPUT, please enter 'y' or 'n'" << std::endl;
-            }
-        }
-    }
+    // while (!std::cin.eof() && !(success)){
+    //     std::cout << std::endl
+    //               << "Do you want to enable GreyBoard and 6x6 mode? (y/n)" << std::endl
+    //               << "> ";
+    //     std::cin >> extension;
+    //     if (std::cin.good()){
+    //         if (tolower(extension) == 'y')
+    //         {
+    //             eMode = true;
+    //             success = true;
+    //         }
+    //         if (tolower(extension) == 'n')
+    //         {
+    //             eMode = false;
+    //             success = true;
+    //         }
+    //         else
+    //         {
+    //             std::cout << std::endl
+    //                       << "INVALID INPUT, please enter 'y' or 'n'" << std::endl;
+    //         }
+    //     }
+    // }
     //Create both players
     gameBoard->createPlayer(playerName1, playerName2);
     //Fill all the factories
@@ -271,13 +262,13 @@ void playNewGame(int seed)
     std::cout << "=== Start Round ===" << std::endl;
 
     bool playerTurn = 0;
-    gameLoop(gameBoard, playerTurn, greyBoardMode, extension);
+    gameLoop(gameBoard, playerTurn, extension);
 
     delete saveGame;
     delete gameBoard;
 }
 
-void menuSelection(int userInput, int seed)
+void menuSelection(int userInput, int seed, bool extension)
 {
     if (userInput == 3)
     {
@@ -285,7 +276,7 @@ void menuSelection(int userInput, int seed)
     }
     else if (userInput == 1)
     {
-        playNewGame(seed);
+        playNewGame(seed, extension);
     }
     else if (userInput == 2)
     {
@@ -296,11 +287,11 @@ void menuSelection(int userInput, int seed)
         {
             GameBoard *gameBoard = loadGameInstance->startTheLoadedGame();
 
-            // gameLoop(gameBoard, gameBoard->getPlayer(0)->getTurn());
+            gameLoop(gameBoard, gameBoard->getPlayer(0)->getTurn(), extension);
         }
     }
 }
-void gameLoop(GameBoard *gameBoard, bool playerTurn, bool greyBoardMode, bool extension)
+void gameLoop(GameBoard *gameBoard, bool playerTurn, bool extension)
 {
 
     //Create instance of save
@@ -319,7 +310,7 @@ void gameLoop(GameBoard *gameBoard, bool playerTurn, bool greyBoardMode, bool ex
 
         std::cout << std::endl;
         std::cout << "Mosaic for player: " << gameBoard->getPlayer(playerTurn)->getPlayerName() << std::endl;
-        printMosaic(gameBoard, playerTurn);
+        printMosaic(gameBoard, playerTurn, extension);
         int factory = -1;
         char colour = ' ';
         int mosaicRow = 0;
@@ -340,11 +331,11 @@ void gameLoop(GameBoard *gameBoard, bool playerTurn, bool greyBoardMode, bool ex
         {
             std::cout << "Wrong factory number" << std::endl;
         }
-        else if (!(colour == 'R' || colour == 'Y' || colour == 'B' || colour == 'L' || colour == 'U'))
+        else if (!(colour == 'R' || colour == 'Y' || colour == 'B' || colour == 'L' || colour == 'U' || colour == 'O'))
         {
             std::cout << "Wrong colour" << std::endl;
         }
-        else if (mosaicRow > 5 || mosaicRow < 1)
+        else if (((mosaicRow > 5 || mosaicRow < 1) && !extension) || ((mosaicRow > 6 || mosaicRow < 1) && extension))
         {
             std::cout << "The mosaic row you want to put is wrong" << std::endl;
         }
@@ -355,18 +346,18 @@ void gameLoop(GameBoard *gameBoard, bool playerTurn, bool greyBoardMode, bool ex
                 std::cout << std::endl;
                 std::cout << "New Mosaic:" << std::endl;
                 //Print each player's Mosaic after a Player has picked tiles
-                printMosaic(gameBoard, playerTurn);
+                printMosaic(gameBoard, playerTurn, extension);
                 //End game
                 if (endGame(gameBoard, playerTurn)){
                     return;
                 };
                 //End round
-                endRound(gameBoard, playerTurn);
+                endRound(gameBoard, playerTurn, extension);
                 playerTurn = !playerTurn;
             }else{
                 std::cout << "Your decision is unsuccessful. Please redo in the next round." << std::endl;
                 //Print each player's Mosaic after a Player has picked tiles
-                printMosaic(gameBoard, playerTurn);
+                printMosaic(gameBoard, playerTurn, extension);
                 std::cout << std::endl;
             }
         }

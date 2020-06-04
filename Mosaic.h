@@ -1,7 +1,6 @@
 #ifndef MOSAIC_H
 #define MOSAIC_H
-
-#define MOSAIC_LENGTH 5
+#define MOSAIC_LENGTH 6
 #define BROKEN_LENGTH 20
 #define FIRST 1
 
@@ -22,7 +21,7 @@ public:
 	void addTiles(Tile *tile, int row, bool firstPlayer);
 
 	//Print Mosaic
-	void printMosaic();
+	void printMosaic(bool extension);
 
 	char **getLeftPart();
 	char **getRightPart();
@@ -56,6 +55,8 @@ public:
 	int getTotalScore(int playerTurn);
 
 private:
+	int mosaic_length;
+	bool extension;
 	struct Node *head;
 	char **leftPart = nullptr;
 	char **rightPart = nullptr;

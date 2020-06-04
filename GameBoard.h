@@ -15,7 +15,7 @@ class GameBoard
 
 public:
 	GameBoard();
-	GameBoard(int seed);
+	GameBoard(int seed, bool extension);
 	GameBoard(int ramdomSeed, bool player1Turn, std::string playerNames[2],
 			  int playerScores[2], std::string playerLines[2][5], std::string playerBrokenTiles[2],
 			  std::string playerWalls[2], std::string centreFactory, std::string factoriesStringData[5],

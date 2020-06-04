@@ -7,7 +7,7 @@
 class TileBag
 {
 public:
-    TileBag(int seed);
+    TileBag(int seed, bool extension);
     TileBag(TileBag &other);
     TileBag(std::string loadData);
 
@@ -27,6 +27,7 @@ public:
 
 private:
     std::vector<Tile *> tileBag;
+    bool extension;
 };
 
 #endif
