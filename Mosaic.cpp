@@ -302,36 +302,52 @@ void Mosaic::wallTiling()
             }
         }
     }else{
-        for (int row = 0; row < mosaic_length; row++)
-        {
+        int row = 0;
+        while(row < mosaic_length){
             int newCol=0;
+            bool success=true;
             if (complete[row])
             {
                 printMosaic(extension);
                 std::cout << "Row " << row+1 << " is completed." << std::endl;
-                std::cout << "Which mosaic row you want to put? Input two integer indicating col, e.g.: > 2 " << std::endl << "> ";
+                std::cout << "Which mosaic col you want to put? Input ONE integer indicating col, e.g.: 2 " << std::endl << "> ";
+                std::cin >> newCol;
                 if (std::cin.good()){
-                    std::cin >> newCol;
                     char tmp = leftPart[row][0];
                     newTile = new Tile(getColour(tmp));
-                    rightPart[row][newCol - 1] = tmp;
+                    for (int i = 0; i < mosaic_length && success; i++){
+                        if (rightPart[i][newCol-1] == tmp){
+                            std::cout << "Already existing the same colour tile on the same column, please re-enter the col you want to put." << std::endl;
+                            success = false;
+                        }
+                    }
+                    if (rightPart[row][newCol-1] != '.'){
+                        std::cout<<"Already existing tile, please re-enter the col you want to put." << std::endl;
+                        success = false;
+                    }
+                    if (success){
+                        rightPart[row][newCol - 1] = tmp;
+
+                        // wall tiling let them become empty
+                        for (int i = 0; i < row + 1; i++)
+                        {
+                            leftPart[row][i] = '.';
+                        }
+                        // others go to boxlid
+                        for (int i = 0; i < row; i++)
+                        {
+                            boxlid->addFront(&head, newTile);
+                        }
+                        row++;
+                    }
                 }
                 else{
                     std::cout << "Invalid input, please enter again." << std::endl;
                     std::cin.clear();
                     std::cin.ignore(1000, '\n');
                 }
-                
-                // wall tiling let them become empty
-                for (int i = 0; i < row + 1; i++)
-                {
-                    leftPart[row][i] = '.';
-                }
-                // others go to boxlid
-                for (int i = 0; i < row; i++)
-                {
-                    boxlid->addFront(&head, newTile);
-                }
+            }else{
+                row++;
             }
         }
     }

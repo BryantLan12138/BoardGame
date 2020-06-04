@@ -11,7 +11,7 @@ public:
     ~SaveGame();
 
     //Save the current state of game board
-    void SaveGameState(GameBoard *gameBoard);
+    void SaveGameState(GameBoard *gameBoard, bool extension);
     //Save each player information
     void savePlayers(GameBoard *gameBoard, std::ofstream &save);
     //Save center of table (center factory)
@@ -30,8 +30,11 @@ public:
     void saveBoxLid(GameBoard *gameBoard, std::ofstream &save);
     //Save the tile bag
     void saveTileBag(GameBoard *gameBoard, std::ofstream &save);
+    //Save the mode
+    void saveMode(GameBoard *gameBoard, std::ofstream &save, bool extension);
 
 private:
     // GameBoard *gameBoard;
+    int mosaic_length = 5;
 };
 #endif // !SAVE_GAME_H

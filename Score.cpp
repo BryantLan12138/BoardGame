@@ -45,10 +45,6 @@ void Score::scoreTile(char** wall, bool extension)
 void Score::brokenScore(char* tiles){
     int deduct = 0;
     for (int i = 0; i < BROKEN_LENGTH; i++){
-        if (roundScore < 0){
-            roundScore = 0;
-            return;
-        }
         if (i < 2){
             if (tiles[i] != '0'){
                 deduct++;
@@ -75,6 +71,11 @@ void Score::brokenScore(char* tiles){
         }
     }
     roundScore -= deduct;
+    if (roundScore < 0)
+    {
+        roundScore = 0;
+        return;
+    }
     totalScore += roundScore;
     
 }

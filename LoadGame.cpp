@@ -262,7 +262,7 @@ void LoadGame::LoadGameData()
                       << std::endl;
 
             //For Testing just print all data
-            // printLoadedGameData();
+            printLoadedGameData();
             gameLoadedCorrecty = true;
             //Start the loaded game
             startTheLoadedGame();

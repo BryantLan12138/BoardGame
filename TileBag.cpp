@@ -78,8 +78,8 @@ Tile *TileBag::get(int i)
 //Adding to the back
 void TileBag::addTiles(int seed)
 {
-    // Create 20 of each tile and place it in the bag
-    for (int i = 0; i < 20; ++i)
+    // Create 40 of each tile and place it in the bag
+    for (int i = 0; i < 40; ++i)
     {
         Tile *red = new Tile(RED);
         Tile *yellow = new Tile(YELLOW);

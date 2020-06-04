@@ -7,7 +7,7 @@
 #include "SaveGame.h"
 #include "LoadGame.h"
 
-void printMenu();
+void printMenu(bool extension);
 void gameLoop(GameBoard *gameBoard, bool playerTurn, bool extension);
 void printCredits();
 void printMosaic(GameBoard *gameBoard, int playerTurn, bool extension);
@@ -35,7 +35,7 @@ int main(int argc, char **argv)
         //Menu will display until the user chooser to Quit or hit EOF
         while (userInput != "4" && !std::cin.eof())
         {
-            printMenu();
+            printMenu(extension);
             std::cout << "> ";
             std::cin >> userInput;
 
@@ -107,10 +107,13 @@ void helpCenter(){
     std::cout << std::endl << "Feel free to come back for more help information. Bye for now!" << std::endl << std::endl;
 }
 
-void printMenu()
+void printMenu(bool extension)
 {
     std::cout << std::endl;
-    std::cout << "Welcome to Azul!" << std::endl;
+    std::cout << "Welcome to Azul," << std::endl;
+    if (extension){
+        std::cout << "6x6 GreyBoard Mode!" << std::endl;
+    }
     std::cout << "-------------------" << std::endl;
 
     std::cout << std::endl;
@@ -153,7 +156,8 @@ void printMosaic(GameBoard *gameBoard, int playerTurn, bool extension){
 }
 
 bool endGame(GameBoard *gameBoard, int playerTurn){   
-    if (gameBoard->endGame(gameBoard->getPlayer(playerTurn)->getMosaic()) || gameBoard->endGame(gameBoard->getPlayer(!playerTurn)->getMosaic()))
+    if (gameBoard->endGame(gameBoard->getPlayer(playerTurn)->getMosaic()) ||
+     gameBoard->endGame(gameBoard->getPlayer(!playerTurn)->getMosaic()))
     {
         int score1 = gameBoard->getPlayer(playerTurn)->getMosaic()->getFinalScore(playerTurn);
         int score2 = gameBoard->getPlayer(!playerTurn)->getMosaic()->getFinalScore(!playerTurn);
@@ -201,8 +205,8 @@ void endRound(GameBoard *gameBoard, int playerTurn, bool extension){
         std::cout << std::endl;
 
         //Set points for each player
-        gameBoard->getPlayer(playerTurn)->setPlayerPoints(gameBoard->getPlayer(playerTurn)->getMosaic()->getRoundScore(playerTurn));
-        gameBoard->getPlayer(!playerTurn)->setPlayerPoints(gameBoard->getPlayer(!playerTurn)->getMosaic()->getRoundScore(!playerTurn));
+        gameBoard->getPlayer(playerTurn)->setPlayerPoints(gameBoard->getPlayer(playerTurn)->getMosaic()->getTotalScore(playerTurn));
+        gameBoard->getPlayer(!playerTurn)->setPlayerPoints(gameBoard->getPlayer(!playerTurn)->getMosaic()->getTotalScore(!playerTurn));
 
         //Refil factories after each round
         gameBoard->fillFactories();
@@ -223,34 +227,10 @@ void playNewGame(int seed, bool extension)
 
     std::string playerName1 = "";
     std::string playerName2 = "";
-    // bool eMode=false, success=false;
     std::cout << "Enter a name for player 1" << std::endl << "> ";
     std::cin >> playerName1;
     std::cout << std::endl << "Enter a name for player 2" << std::endl << "> ";
     std::cin >> playerName2;
-    // while (!std::cin.eof() && !(success)){
-    //     std::cout << std::endl
-    //               << "Do you want to enable GreyBoard and 6x6 mode? (y/n)" << std::endl
-    //               << "> ";
-    //     std::cin >> extension;
-    //     if (std::cin.good()){
-    //         if (tolower(extension) == 'y')
-    //         {
-    //             eMode = true;
-    //             success = true;
-    //         }
-    //         if (tolower(extension) == 'n')
-    //         {
-    //             eMode = false;
-    //             success = true;
-    //         }
-    //         else
-    //         {
-    //             std::cout << std::endl
-    //                       << "INVALID INPUT, please enter 'y' or 'n'" << std::endl;
-    //         }
-    //     }
-    // }
     //Create both players
     gameBoard->createPlayer(playerName1, playerName2);
     //Fill all the factories
@@ -263,7 +243,10 @@ void playNewGame(int seed, bool extension)
 
     bool playerTurn = 0;
     gameLoop(gameBoard, playerTurn, extension);
-
+    std::cout << std::endl
+        << "hello!!!" << std::endl
+        << std::endl;
+    saveGame->SaveGameState(gameBoard, extension);
     delete saveGame;
     delete gameBoard;
 }
@@ -282,20 +265,23 @@ void menuSelection(int userInput, int seed, bool extension)
     {
         LoadGame *loadGameInstance = new LoadGame();
         //Continue the game
-
+        
         if (loadGameInstance->gameLoadCorrectly())
         {
+            SaveGame *saveGame = new SaveGame();
             GameBoard *gameBoard = loadGameInstance->startTheLoadedGame();
-
             gameLoop(gameBoard, gameBoard->getPlayer(0)->getTurn(), extension);
+            saveGame->SaveGameState(gameBoard, extension);
+
+            delete saveGame;
         }
+        
     }
 }
 void gameLoop(GameBoard *gameBoard, bool playerTurn, bool extension)
 {
 
     //Create instance of save
-    SaveGame* saveGameInstace = new SaveGame();
 
     // bool playerTurn = !playerStart;
     while (!(std::cin.eof()))
@@ -353,6 +339,7 @@ void gameLoop(GameBoard *gameBoard, bool playerTurn, bool extension)
                 };
                 //End round
                 endRound(gameBoard, playerTurn, extension);
+                //Change player turn
                 playerTurn = !playerTurn;
             }else{
                 std::cout << "Your decision is unsuccessful. Please redo in the next round." << std::endl;
@@ -361,10 +348,5 @@ void gameLoop(GameBoard *gameBoard, bool playerTurn, bool extension)
                 std::cout << std::endl;
             }
         }
-
-        //Change player turn
-        
     }
-    saveGameInstace->SaveGameState(gameBoard);
-    delete saveGameInstace;
 }

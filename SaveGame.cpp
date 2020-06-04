@@ -5,8 +5,11 @@ SaveGame::SaveGame()
 }
 
 SaveGame::~SaveGame() {}
-void SaveGame::SaveGameState(GameBoard *gameBoard)
+void SaveGame::SaveGameState(GameBoard *gameBoard, bool extension)
 {
+    if (extension){
+        mosaic_length = 6;
+    }
     std::ofstream save("SaveGame.txt");
     if (gameBoard != nullptr)
     {
@@ -27,6 +30,9 @@ void SaveGame::SaveGameState(GameBoard *gameBoard)
 
         //Save the tileBag
         saveTileBag(gameBoard, save);
+
+        //Save the mode
+        saveMode(gameBoard, save, extension);
     }
     else
     {
@@ -89,7 +95,7 @@ void SaveGame::saveMosaicLeftPart(GameBoard *gameBoard, std::ofstream &save, boo
     char **leftpart = gameBoard->getPlayer(player)->getMosaic()->getLeftPart();
     if (leftpart != nullptr)
     {
-        for (int i = FIRST; i < MOSAIC_LENGTH + 1; i++)
+        for (int i = FIRST; i < mosaic_length + 1; i++)
         {
             for (int j = 0; j < i; j++)
             {
@@ -118,9 +124,9 @@ void SaveGame::saveMosaicRightPart(GameBoard *gameBoard, std::ofstream &save, bo
 {
 
     char **rightPart = gameBoard->getPlayer(player)->getMosaic()->getRightPart();
-    for (int i = FIRST; i < MOSAIC_LENGTH + 1; i++)
+    for (int i = FIRST; i < mosaic_length + 1; i++)
     {
-        for (int j = 0; j < MOSAIC_LENGTH; ++j)
+        for (int j = 0; j < mosaic_length; ++j)
         {
             save << rightPart[i - 1][j];
         }
@@ -165,4 +171,10 @@ void SaveGame::saveTileBag(GameBoard *gameBoard, std::ofstream &save)
         save << gameBoard->getTileBag()->get(i)->getColourAsChar();
     }
     save << '\n';
+}
+
+//Save the mode
+void SaveGame::saveMode(GameBoard *gameBoard, std::ofstream &save, bool extension)
+{
+    save << extension;
 }
