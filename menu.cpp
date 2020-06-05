@@ -11,7 +11,7 @@ void printMenu(bool extension);
 void gameLoop(GameBoard *gameBoard, bool playerTurn, bool extension);
 void printCredits();
 void printMosaic(GameBoard *gameBoard, int playerTurn, bool extension);
-bool endGame(GameBoard *gameBoard, int playerTurn);
+void endGame(GameBoard *gameBoard, int playerTurn);
 void endRound(GameBoard *gameBoard, int playerTurn, bool extension);
 void menuSelection(int userInput, int seed, bool extension);
 void playNewGame(int seed);
@@ -155,33 +155,28 @@ void printMosaic(GameBoard *gameBoard, int playerTurn, bool extension){
     gameBoard->getPlayer(playerTurn)->getMosaic()->checkBroken();
 }
 
-bool endGame(GameBoard *gameBoard, int playerTurn){   
-    if (gameBoard->endGame(gameBoard->getPlayer(playerTurn)->getMosaic()) ||
-     gameBoard->endGame(gameBoard->getPlayer(!playerTurn)->getMosaic()))
-    {
-        int score1 = gameBoard->getPlayer(playerTurn)->getMosaic()->getFinalScore(playerTurn);
-        int score2 = gameBoard->getPlayer(!playerTurn)->getMosaic()->getFinalScore(!playerTurn);
-        gameBoard->getPlayer(playerTurn)->setPlayerPoints(score1);
-        gameBoard->getPlayer(!playerTurn)->setPlayerPoints(score2);
-        std::cout << std::endl
-                  << "=== END GAME ===" << std::endl;
-        std::cout << "The final score for PLAYER " << gameBoard->getPlayer(playerTurn)->getPlayerName() << " : "
-                  << score1 << std::endl;
-        std::cout << "The final score for PLAYER " << gameBoard->getPlayer(!playerTurn)->getPlayerName() << " : "
-                  << score2 << std::endl;
+void endGame(GameBoard *gameBoard, int playerTurn){   
+    
+    int score1 = gameBoard->getPlayer(playerTurn)->getMosaic()->getFinalScore(playerTurn);
+    int score2 = gameBoard->getPlayer(!playerTurn)->getMosaic()->getFinalScore(!playerTurn);
+    gameBoard->getPlayer(playerTurn)->setPlayerPoints(score1);
+    gameBoard->getPlayer(!playerTurn)->setPlayerPoints(score2);
+    std::cout << std::endl
+                << "=== END GAME ===" << std::endl;
+    std::cout << "The final score for PLAYER " << gameBoard->getPlayer(playerTurn)->getPlayerName() << " : "
+                << score1 << std::endl;
+    std::cout << "The final score for PLAYER " << gameBoard->getPlayer(!playerTurn)->getPlayerName() << " : "
+                << score2 << std::endl;
 
-        if (score1 > score2){
-            std::cout << gameBoard->getPlayer(playerTurn)->getPlayerName() << " wins! " << std::endl;
-        }
-        else if (score2 > score1){
-            std::cout << gameBoard->getPlayer(!playerTurn)->getPlayerName() << " wins! " << std::endl;
-        }
-        else{
-            std::cout << "The game is draw. " << std::endl;
-        }
-        return true;
+    if (score1 > score2){
+        std::cout << gameBoard->getPlayer(playerTurn)->getPlayerName() << " wins! " << std::endl;
     }
-    return false;
+    else if (score2 > score1){
+        std::cout << gameBoard->getPlayer(!playerTurn)->getPlayerName() << " wins! " << std::endl;
+    }
+    else{
+        std::cout << "The game is draw. " << std::endl;
+    }
 }
 void endRound(GameBoard *gameBoard, int playerTurn, bool extension){
     if (gameBoard->endRound())
@@ -333,12 +328,15 @@ void gameLoop(GameBoard *gameBoard, bool playerTurn, bool extension)
                 std::cout << "New Mosaic:" << std::endl;
                 //Print each player's Mosaic after a Player has picked tiles
                 printMosaic(gameBoard, playerTurn, extension);
-                //End game
-                if (endGame(gameBoard, playerTurn)){
-                    return;
-                };
                 //End round
                 endRound(gameBoard, playerTurn, extension);
+                //End game
+                if (gameBoard->endGame(gameBoard->getPlayer(playerTurn)->getMosaic()) ||
+                    gameBoard->endGame(gameBoard->getPlayer(!playerTurn)->getMosaic()))
+                {
+                    endGame(gameBoard, playerTurn);
+                    return;
+                };
                 //Change player turn
                 playerTurn = !playerTurn;
             }else{

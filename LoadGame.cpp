@@ -288,8 +288,7 @@ void LoadGame::printLoadedGameData()
     std::cout << "Random seed: " << ramdomSeed << std::endl;
 
     //Print if is player 1 turn
-    if (player1Turn)
-    {
+    if (player1Turn){
         std::cout << "Player 1 turn: true" << std::endl;
     }
     else

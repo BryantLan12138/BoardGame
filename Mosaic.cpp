@@ -230,6 +230,7 @@ void Mosaic::addTiles(Tile *tile, int row, bool firstPlayer)
         if (firstPlayer)
         {
             addBroken(FIRST_MARKER);
+            firstPlayer = false;
         }
         if (leftPart[row - 1][i - 1] != colour && leftPart[row - 1][i - 1] != '.')
         {
@@ -440,7 +441,7 @@ bool Mosaic::checkEndGame()
             }
         }
     }
-
+   
     for (int i = 0; i < mosaic_length; i++)
     {
         if (complete[i])
