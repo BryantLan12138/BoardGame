@@ -1,209 +1,275 @@
-#include <iostream>
-#include <string>
-#include <memory> // unique_ptr
-// #include "BinaryTree.h"
+#ifndef BINARYTREE_H
+#define BINARYTREE_H
 
-template <typename T>
-class BSTree
+// using template to put factory into the binary tree
+template <class T>
+class BinaryTree
 {
-public:
-    // constructors
-    BSTree() : root(nullptr) {}
 
-    // member functions
-    void Print() const;
-    void Insert(T val);
-    bool Contains(T val) const;
-    void Remove(T val);
-
-private:
-    struct TreeNode
+    struct node
     {
-        // member vars
-        T data;
-        std::unique_ptr<TreeNode> left;
-        std::unique_ptr<TreeNode> right;
-
-        // constructor
-        TreeNode(T data) : data(data), left(nullptr), right(nullptr) {}
+        T* value;
+        struct node *right;
+        struct node *left;
     };
 
-    std::unique_ptr<TreeNode> root;
-    std::string SubTreeAsString(const std::unique_ptr<TreeNode> &node) const; // Helper method for Print()
-    void Insert(T val, std::unique_ptr<TreeNode> &node);                      // Helper method for Insert(int val)
-    bool Contains(T val, std::unique_ptr<TreeNode> &node) const;              // Helper method for Contains(int val)
-    void Remove(T val, std::unique_ptr<TreeNode> &node);                      // Helper method for Remove(int val)
-    std::unique_ptr<TreeNode> &FindMin(std::unique_ptr<TreeNode> &node);      // Helper method for Remove(int val)
+public:
+    BinaryTree();
+    ~BinaryTree();
+    // insert tiles
+    void add(T* val);
+
+    // search tiles
+    bool lookup(T* val);
+
+    // get specific tiles
+    T* get(T* val);
+
+    // find the smallest tile
+    struct node* findMin();
+
+    // delete the specific tile
+    struct node* remove(T *val);
+
+    // print 
+    void printInOrder();
+
+    // get tree size
+    int size();
+    
+
+private:
+    // starting point
+    struct node *root;
+    
+    // tree size
+    int treeSize;
+
+    // helper function for above
+    T* get(struct node *node, T* val);
+    void add(struct node **node, T* val);
+    bool lookup(struct node *node, T* val);
+    struct node* remove(struct node *node, T *val);
+    void printInOrder(struct node *node);
+    void deleteTree(struct node *node);
+    struct node* findMin(struct node *node);
 };
 
-/// Print the tree
-template <typename T>
-void BSTree<T>::Print() const
+template <class T>
+BinaryTree<T>::BinaryTree()
 {
-    if (this->root == nullptr)
+    this->root = NULL;
+    this->treeSize = 0;
+}
+
+template <class T>
+BinaryTree<T>::~BinaryTree()
+{
+    deleteTree(this->root);
+}
+
+template <class T>
+int BinaryTree<T>::size()
+{
+    return this->treeSize;
+}
+
+template <class T>
+void BinaryTree<T>::add(T* val)
+{
+    add(&(this->root), val);
+}
+
+template <class T>
+void BinaryTree<T>::add(struct node **node, T* val)
+{
+
+    // if there isn't any nodes, create one
+    if (*node == NULL)
     {
-        std::cout << "{}" << std::endl;
+        struct node *tmp = new struct node;
+        tmp->value = val;
+        tmp->left = NULL;
+        tmp->right = NULL;
+        *node = tmp;    
+        
+        // make tree size bigger
+        this->treeSize++;
     }
     else
-    {
-        std::cout << this->SubTreeAsString(this->root) << std::endl;
-    }
-}
-
-/// Print the subtree starting at node
-template <typename T>
-std::string BSTree<T>::SubTreeAsString(const std::unique_ptr<TreeNode> &node) const
-{
-    std::string leftStr = (node->left == nullptr) ? "{}" : SubTreeAsString(node->left);
-    std::string rightStr = (node->right == nullptr) ? "{}" : SubTreeAsString(node->right);
-    std::string result = "{" + std::to_string(node->data) + ", " + leftStr + ", " + rightStr + "}";
-    return result;
-}
-
-/// Insert a new value into the tree
-template <typename T>
-void BSTree<T>::Insert(T val)
-{
-    this->Insert(val, this->root);
-}
-
-/// Insert a new value into the subtree starting at node
-template <typename T>
-void BSTree<T>::Insert(T val, std::unique_ptr<TreeNode> &node)
-{
-
-    if (node == nullptr)
-    {
-        // Case: node is a nullptr
-        // Make a new TreeNode for it to point to
-        node = std::make_unique<TreeNode>(val);
-    }
-    else
-    {
-        if (val < node->data)
+    {   
+        // if the current colour is bigger than the node colour, find node's right part
+        if (val->getColour() > (*node)->value->getColour())
         {
-            // Case: val is < node's data
-            this->Insert(val, node->left);
-        }
-        else if (val > node->data)
-        {
-            // Case: val is > node's data
-            this->Insert(val, node->right);
+            add(&(*node)->right, val);
         }
         else
         {
-            // Case: val is equal to node's data
-            std::cout << "Warning: Value already exists, so nothing will be done." << std::endl;
+            add(&(*node)->left, val);
         }
     }
 }
 
-/// Check if the given value exists in the BSTree
-template <typename T>
-bool BSTree<T>::Contains(T val) const
+template <class T>
+void BinaryTree<T>::printInOrder()
 {
-    return Contains(val, this->root);
+    printInOrder(this->root);
+    // std::cout << std::endl;
 }
 
-/// Check if the given value exists in the subtree
-/// starting at node
-template <typename T>
-bool BSTree<T>::Contains(T val, std::unique_ptr<TreeNode> &node) const
+template <class T>
+void BinaryTree<T>::printInOrder(struct node *node)
 {
-    if (node == nullptr)
+    if (node != NULL)
     {
-        return false;
+        printInOrder(node->left);
+        char colour = node->value->getColourAsChar();
+        if (colour == 'R')
+            std::cout << "\033[1;31m" << colour << "\033[0m" << ' ';
+        if (colour == 'Y')
+            std::cout << "\033[1;33m" << colour << "\033[0m" << ' ';
+        if (colour == 'U')
+            std::cout << "\033[1;30m" << colour << "\033[0m" << ' ';
+        if (colour == 'B')
+            std::cout << "\033[1;34m" << colour << "\033[0m" << ' ';
+        if (colour == 'L')
+            std::cout << "\033[1;96m" << colour << "\033[0m" << ' ';
+        printInOrder(node->right);
     }
-    else if (val == node->data)
+}
+
+// deconstructor helper
+template <class T>
+void BinaryTree<T>::deleteTree(struct node *node)
+{
+    if (node != NULL)
     {
-        return true;
+        // delete them in order
+        deleteTree(node->left);
+        deleteTree(node->right);
+        delete node;
     }
-    else if (val < node->data)
+}
+
+template <class T>
+T* BinaryTree<T>::get(T* val){
+    return get(this->root, val);
+}
+
+template <class T>
+T* BinaryTree<T>::get(struct node *node, T* val)
+{
+    if (node == NULL)
     {
-        return this->Contains(val, node->left);
+        return NULL;
     }
     else
     {
-        return this - Contains(val, node->right);
-    }
-}
-
-/// Remove given value from the tree
-template <typename T>
-void BSTree<T>::Remove(T val)
-{
-    this->Remove(val, this->root);
-}
-
-/// Remove given value from the subtree starting at node
-template <typename T>
-void BSTree<T>::Remove(T val, std::unique_ptr<TreeNode> &node)
-{
-    if (node == nullptr)
-    {
-        // Case: nullptr
-
-        std::cout << "val not found in tree" << std::endl;
-    }
-    else if (val == node->data)
-    {
-        // Found value
-
-        if (node->left == nullptr && node->right == nullptr)
+        if (val->getColour() == node->value->getColour())
         {
-            // Case: node is a leaf
-
-            node = nullptr;
+            return node->value;
         }
-        else if (node->left != nullptr && node->right == nullptr)
+        if (val->getColour() > node->value->getColour())
         {
-            // Case: node has a left subtree (but not right)
-            // Point node's parent at node's left subtree
-
-            node = std::move(node->left);
-        }
-        else if (node->left == nullptr && node->right != nullptr)
-        {
-            // Case: node has a right subtree (but not left)
-
-            node = std::move(node->right);
+            return get(node->right, val);
         }
         else
         {
-            // Case: node has left and right subtrees
-
-            std::unique_ptr<TreeNode> &minNode = this->FindMin(node->right); // returns a reference to the actual pointer in the tree
-            node->data = minNode->data;
-            this->Remove(minNode->data, minNode);
+            return get(node->left, val);
         }
     }
-    else if (val < node->data)
-    {
-        // Case: remove val from this node's left subtree
-        this->Remove(val, node->left);
-    }
-    else
-    {
-        // Case: remove val from this node's right subtree
-        this->Remove(val, node->right);
-    }
+    return NULL;
 }
 
-/// Search the subtree starting at node and return a pointer to the minimum-value node
-/// The returned pointer will be a reference of an actual pointer in the tree, not a copy
-template <typename T>
-std::unique_ptr<typename BSTree<T>::TreeNode> &BSTree<T>::FindMin(std::unique_ptr<TreeNode> &node)
+template <class T>
+bool BinaryTree<T>::lookup(T* val)
 {
-    if (node == nullptr)
+    return lookup(this->root, val);
+}
+
+template <class T>
+bool BinaryTree<T>::lookup(struct node *node, T* val)
+{
+
+    if (node != NULL)
     {
-        throw "Min value not found";
+        // got the colour
+        if (val->getColour() == node->value->getColour()){
+            return true;
+        }
+        // current colour is greater, find right part
+        if (val->getColour() > node->value->getColour()){
+            return lookup(node->right, val);
+
+        // otherwise look left part
+        }else{
+            return lookup(node->left, val);
+        }
     }
-    else if (node->left == nullptr)
-    {
+
+    return false;
+}
+
+template <class T>
+typename BinaryTree<T>::node *BinaryTree<T>::findMin()
+{
+    return findMin(this->root);
+}
+
+template <class T>
+typename BinaryTree<T>::node *BinaryTree<T>::findMin(struct node *node)
+{
+    // search the smallest colour
+    struct node *current = node;
+    while (current && current->left != NULL)
+        current = current->left;
+    return current;
+}
+
+template <class T>
+typename BinaryTree<T>::node *BinaryTree<T>::remove(T *val)
+{
+    this->root = remove(this->root, val);
+    return root;
+}
+
+template <class T>
+typename BinaryTree<T>::node *BinaryTree<T>::remove(struct node *node, T *val)
+{
+    // if the node is empty, just return null
+    if (node == NULL)
         return node;
-    }
+
+    // otherwise several cases by recursion
+    // 1. too small, remove left
+    if (val->getColour() < node->value->getColour())
+        node->left = remove(node->left, val);
+
+    // 2. too big, remove right part
+    else if (val->getColour() > node->value->getColour())
+        node->right = remove(node->right, val);
     else
     {
-        return this->FindMin(node->left);
-    }
+        if (node->left == NULL)
+        {
+            struct node *temp = node->right;
+            this->treeSize--;
+            delete node;
+            return temp;
+        }
+        else if (root->right == NULL)
+        {
+            struct node *temp = node->left;
+            this->treeSize--;
+            delete node;
+            return temp;
+        }
+        struct node *temp = findMin(node->right);
+        node->value = temp->value;
+        node->right = remove(node->right, temp->value);
+        }
+        return node;
+
 }
+
+#endif

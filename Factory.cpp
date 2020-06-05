@@ -256,3 +256,47 @@ void Factory::clear()
 	}
 	length = 0;
 }
+
+
+// Attempt BINARY SEARCH TREE FUNCTIONS
+// void Factory::pickTiles(Tile *tile, CenterOfTable *centerOfTable, int row, Mosaic *mosaic)
+// {
+// 	if (this->newTree->size() != 0)
+// 	{
+// 		while (this->newTree->lookup(tile))
+// 		{
+// 			mosaic->addTiles(tile, row, false);
+// 			this->newTree->remove(tile);
+// 		}
+// 		while (this->newTree->findMin() != NULL)
+// 		{
+// 			moveCenter(centerOfTable, this->newTree->findMin()->value);
+// 			this->newTree->remove(this->newTree->findMin()->value);
+// 		}
+
+// 		this->newTree->printInOrder();
+// 		std::cout << this->newTree->size() << std::endl;
+// 	}
+// }
+
+// // new checkFactory with binary tree
+// bool Factory::checkFactory(Tile *tile)
+// {
+// 	if (length != 0)
+// 		for (int i = 0; i < MAX_LENGTH; i++)
+// 			if (newTree->lookup(tile))
+// 				return true;
+
+// 	return false;
+// }
+
+// new one with binary tree
+// void Factory::fillFactory(TileBag *tileBag)
+// {
+// 	for (int i = 0; i < MAX_LENGTH; ++i)
+// 	{
+// 		newTree->add(tileBag->get(i));
+// 		tileBag->deleteTile(i);
+// 	}
+// 	length = MAX_LENGTH;
+// }

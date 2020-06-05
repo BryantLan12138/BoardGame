@@ -50,11 +50,16 @@ public:
 
 	bool checkFactory(char colour);
 
+	// HELPER FOR BINARY SEARCH TREE
+	void moveCenter(CenterOfTable *centerOfTable, Tile *tile);
+	bool checkFactory(Tile *tile);
+	void pickTiles(Tile *tile, CenterOfTable *centerOfTable, int row, Mosaic *mosaic);
+
 private:
 	// TileBag *tileBag;
 	int length;
 	Tile *tiles[MAX_LENGTH];
-	// BSTree<Tile> *newTree;
+	BinaryTree<Tile> *newTree;
 };
 
 #endif // !FACTORY_H
